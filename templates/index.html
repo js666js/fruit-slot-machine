@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>水果老虎机</title>
+
+<style>
+
+body{
+    font-family: Arial;
+    background:#0f172a;
+    color:white;
+    text-align:center;
+    padding:20px;
+}
+
+.container{
+    max-width:800px;
+    margin:auto;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(3,100px);
+    gap:10px;
+    justify-content:center;
+    margin:20px 0;
+}
+
+.cell{
+    width:100px;
+    height:100px;
+    font-size:50px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:white;
+    color:black;
+    border-radius:12px;
+}
+
+.win{
+    background:gold;
+}
+
+button{
+    padding:10px 15px;
+    border:none;
+    border-radius:8px;
+    margin:5px;
+    cursor:pointer;
+}
+
+.primary{background:orange;color:white;}
+.secondary{background:gray;color:white;}
+.green{background:green;color:white;}
+.blue{background:#2563eb;color:white;}
+
+.message{
+    font-size:18px;
+    font-weight:bold;
+    margin:10px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🎰 水果老虎机</h1>
+
+<div>
+余额：£{{ balance }}  
+下注：£{{ bet }}
+</div>
+
+<br>
+
+<div>
+<form method="post" action="{{ url_for('recharge') }}">
+<input type="number" name="amount" value="10">
+<button class="green">充值</button>
+</form>
+
+<form method="post" action="{{ url_for('quick_recharge', amount=10) }}">
+<button class="blue">£10</button>
+</form>
+
+<form method="post" action="{{ url_for('quick_recharge', amount=20) }}">
+<button class="blue">£20</button>
+</form>
+
+<form method="post" action="{{ url_for('quick_recharge', amount=50) }}">
+<button class="blue">£50</button>
+</form>
+</div>
+
+<div class="grid">
+
+{% for r in range(3) %}
+{% for c in range(3) %}
+
+<div class="cell {% if [r,c] in winning_positions %}win{% endif %}">
+{{ cells[r][c] }}
+</div>
+
+{% endfor %}
+{% endfor %}
+
+</div>
+
+<div class="message" style="color:{{ message_color }}">
+{{ message }}
+</div>
+
+<br>
+
+<form method="post" action="{{ url_for('decrease_bet') }}">
+<button class="secondary">减少下注</button>
+</form>
+
+<form method="post" action="{{ url_for('spin') }}">
+<button class="primary">开始旋转</button>
+</form>
+
+<form method="post" action="{{ url_for('increase_bet') }}">
+<button class="secondary">增加下注</button>
+</form>
+
+<form method="post" action="{{ url_for('reset') }}">
+<button class="secondary">重置</button>
+</form>
+
+</div>
+
+</body>
+</html>
