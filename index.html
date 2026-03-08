@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>水果老虎机</title>
+
+<style>
+
+body{
+    font-family: Arial;
+    text-align:center;
+    background:#0f172a;
+    color:white;
+}
+
+h1{
+    margin-top:20px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(3,120px);
+    gap:10px;
+    justify-content:center;
+    margin:20px;
+}
+
+.cell{
+    width:120px;
+    height:120px;
+    background:white;
+    color:black;
+    font-size:50px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:10px;
+}
+
+.win{
+    background:gold;
+}
+
+button{
+    padding:10px 20px;
+    font-size:16px;
+    margin:10px;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>🎰 水果老虎机</h1>
+
+<div>
+余额: £<span id="balance">0</span>
+&nbsp;&nbsp;&nbsp;
+下注: £<span id="bet">1</span>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<div id="result"></div>
+
+<button onclick="spin()">开始旋转</button>
+<button onclick="betUp()">增加下注</button>
+<button onclick="betDown()">减少下注</button>
+<button onclick="recharge()">充值 £10</button>
+
+<script>
+
+let balance = 0
+let bet = 1
+
+const symbols = [
+"🍎","🍎","🍎",
+"🍒","🍒","🍒",
+"🍇","🍇","🍇",
+"🍐","🍐","🍐",
+"🍉","🍉",
+"🔔",
+"7"
+]
+
+function randomSymbol(){
+return symbols[Math.floor(Math.random()*symbols.length)]
+}
+
+function update(){
+document.getElementById("balance").innerText = balance
+document.getElementById("bet").innerText = bet
+}
+
+function draw(grid){
+const g=document.getElementById("grid")
+g.innerHTML=""
+
+for(let r=0;r<3;r++){
+for(let c=0;c<3;c++){
+
+let d=document.createElement("div")
+d.className="cell"
+d.innerText=grid[r][c]
+
+g.appendChild(d)
+
+}
+}
+}
+
+function spin(){
+
+if(balance < bet){
+alert("余额不足")
+return
+}
+
+balance -= bet
+
+let grid=[]
+
+for(let r=0;r<3;r++){
+grid[r]=[]
+for(let c=0;c<3;c++){
+grid[r][c]=randomSymbol()
+}
+}
+
+draw(grid)
+
+let payout=0
+
+function line(a,b,c){
+
+let s1=grid[a[0]][a[1]]
+let s2=grid[b[0]][b[1]]
+let s3=grid[c[0]][c[1]]
+
+if(s1==s2 && s2==s3){
+
+if(["🍎","🍒","🍇","🍐"].includes(s1)) payout+=2*bet
+if(s1=="🍉") payout+=5*bet
+if(s1=="🔔") payout+=10*bet
+if(s1=="7") payout+=50*bet
+
+}
+
+}
+
+line([0,0],[0,1],[0,2])
+line([1,0],[1,1],[1,2])
+line([2,0],[2,1],[2,2])
+line([0,0],[1,1],[2,2])
+line([0,2],[1,1],[2,0])
+
+let all=[].concat(...grid)
+
+if(new Set(all).size==1 && ["🍎","🍒","🍇","🍐"].includes(all[0])){
+payout+=20*bet
+}
+
+balance+=payout
+
+document.getElementById("result").innerText =
+payout>0 ? "中奖 £"+payout : "未中奖"
+
+update()
+
+}
+
+function betUp(){
+bet++
+update()
+}
+
+function betDown(){
+if(bet>1) bet--
+update()
+}
+
+function recharge(){
+balance+=10
+update()
+}
+
+draw([
+["❔","❔","❔"],
+["❔","❔","❔"],
+["❔","❔","❔"]
+])
+
+update()
+
+</script>
+
+</body>
+</html>
